@@ -5,7 +5,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import Area from '@turf/area';
 import './MapContainer.scss'
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyZXB1dSIsImEiOiJwRDc4UmE0In0.nZEyHmTgCobiCqZ42mqMSg';
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOXGL_TOKEN
 
 export default function MapContainer() {
   const mapContainer = useRef(null);
