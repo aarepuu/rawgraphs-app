@@ -10,6 +10,7 @@ import Section from './components/Section'
 import Footer from './components/Footer'
 import ScreenSizeAlert from './components/ScreenSizeAlert'
 
+import Map from './components/MapContainer'
 import DataLoader from './components/DataLoader'
 import charts from './charts'
 import ChartSelector from './components/ChartSelector'
@@ -34,6 +35,7 @@ function App() {
     parseError,
     unstackedData,
     unstackedColumns,
+    areas,
     data,
     separator,
     thousandsSeparator,
@@ -166,11 +168,16 @@ function App() {
     <div className="App">
       <Header menuItems={HeaderItems} />
       <div className="app-sections">
-        <Section title={`1. Load your data`} loading={loading}>
+        <Section title={`1. Draw a boundary`} loading={loading}>
+          <Map id="map"/>
+        </Section>
+        {areas && (
+        <Section title={`2. Load your data`} loading={loading}>
           <DataLoader {...dataLoader} hydrateFromProject={importProject} />
         </Section>
+        )}
         {data && (
-          <Section title="2. Choose a chart">
+          <Section title="3. Choose a chart">
             <ChartSelector
               availableCharts={charts}
               currentChart={currentChart}
@@ -179,7 +186,7 @@ function App() {
           </Section>
         )}
         {data && currentChart && (
-          <Section title={`3. Mapping`} loading={mappingLoading}>
+          <Section title={`4. Map your dimensions`} loading={mappingLoading}>
             <DataMapping
               ref={dataMappingRef}
               dimensions={currentChart.dimensions}
@@ -190,7 +197,7 @@ function App() {
           </Section>
         )}
         {data && currentChart && (
-          <Section title="4. Customize">
+          <Section title="5. Customize your visualization">
             <ChartPreviewWithOptions
               chart={currentChart}
               dataset={data.dataset}
