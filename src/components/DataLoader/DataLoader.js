@@ -14,6 +14,7 @@ import {
 import { DATA_LOADER_MODE } from '../../hooks/useDataLoader'
 import DataGrid from '../DataGrid/DataGrid'
 import DataSamples from '../DataSamples/DataSamples'
+import DataSources from '../DataSources/DataSources'
 import JsonViewer from '../JsonViewer'
 import ParsingOptions from '../ParsingOptions'
 import styles from './DataLoader.module.scss'
@@ -64,6 +65,19 @@ function DataLoader({
   const [initialOptionState, setInitialOptionState] = useState(null)
 
   const options = [
+    {
+      id: 'source',
+      name: 'Choose a dataset',
+      message: '',
+      loader: (
+        <DataSources
+          onSampleReady={loadSample}
+          setLoadingError={setLoadingError}
+        />
+      ),
+      icon: BsGift,
+      allowedForReplace: true,
+    },
     {
       id: 'paste',
       name: 'Paste your data',

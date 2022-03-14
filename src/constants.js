@@ -92,34 +92,34 @@ export const separatorsLabels = {
 
 export const separatorsList = Object.keys(separatorsLabels)
 
-export const DefaultSeparator = ","
+export const DefaultSeparator = ','
 
 export const AGGREGATIONS_LABELS = {
-  "count": "Count",
-  "mean": "Average",
-  "median": "Median",
-  "max": "Max",
-  "min": "Min",
-  "countDistinct": "Count unique",
-  "sum": "Sum",
-  "csv": "CSV",
-  "csvDistinct": "CSV (unique)",
+  count: 'Count',
+  mean: 'Average',
+  median: 'Median',
+  max: 'Max',
+  min: 'Min',
+  countDistinct: 'Count unique',
+  sum: 'Sum',
+  csv: 'CSV',
+  csvDistinct: 'CSV (unique)',
 }
 
 export const SCALES_LABELS = {
-  "sequential": "Sequential",
-  "diverging": "Diverging",
-  "ordinal": "Ordinal"
+  sequential: 'Sequential',
+  diverging: 'Diverging',
+  ordinal: 'Ordinal',
 }
 
 export const COLOR_SCHEMES_LABELS = {
-  "interpolateBlues": "Blue sequential",
-  "interpolateGreens": "Green sequential",
-  "interpolateReds": "Red sequential",
-  "interpolateRdBu": "RdBu diverging",
-  "interpolateBrBG": "BrBG diverging",
-  "interpolatePiYG": "PiYG diverging",
-  "schemeCategory10": "Categorical 10",
-  "interpolateTurbo": "Turbo discrete",
-  "interpolateSpectral": "Spectral discrete"
+  interpolateBlues: 'Blue sequential',
+  interpolateGreens: 'Green sequential',
+  interpolateReds: 'Red sequential',
+  interpolateRdBu: 'RdBu diverging',
+  interpolateBrBG: 'BrBG diverging',
+  interpolatePiYG: 'PiYG diverging',
+  schemeCategory10: 'Categorical 10',
+  interpolateTurbo: 'Turbo discrete',
+  interpolateSpectral: 'Spectral discrete',
 }

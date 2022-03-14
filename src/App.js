@@ -35,7 +35,6 @@ function App() {
     parseError,
     unstackedData,
     unstackedColumns,
-    areas,
     data,
     separator,
     thousandsSeparator,
@@ -47,6 +46,8 @@ function App() {
     hydrateFromSavedProject,
   } = dataLoader
 
+  const [currentBoundary, setCurrentBoundary] = useState(null)
+  const [currentAreas, setCurrentAreas] = useState([])
   /* From here on, we deal with viz state */
   const [currentChart, setCurrentChart] = useState(null)
   const [mapping, setMapping] = useState({})
@@ -96,6 +97,15 @@ function App() {
     },
     [clearLocalMapping]
   )
+
+  const handleBoundaryChange = useCallback((boundary) => {
+    setCurrentBoundary(boundary)
+  }, [])
+
+  const handleAreasChange = useCallback((areas) => {
+    setCurrentAreas(areas)
+    console.log(areas)
+  }, [])
 
   const exportProject = useCallback(() => {
     return serializeProject({
@@ -169,13 +179,18 @@ function App() {
       <Header menuItems={HeaderItems} />
       <div className="app-sections">
         <Section title={`1. Draw a boundary`} loading={loading}>
-          <Map id="map"/>
+          <Map
+            currentBoundary={currentBoundary}
+            setCurrentBoundary={handleBoundaryChange}
+            currentAreas={currentAreas}
+            setCurrentAreas={handleAreasChange}
+          />
         </Section>
-        {areas && (
-        <Section title={`2. Load your data`} loading={loading}>
-          <DataLoader {...dataLoader} hydrateFromProject={importProject} />
-        </Section>
-        )}
+        {
+          <Section title={`2. Load your data`} loading={loading}>
+            <DataLoader {...dataLoader} hydrateFromProject={importProject} />
+          </Section>
+        }
         {data && (
           <Section title="3. Choose a chart">
             <ChartSelector
