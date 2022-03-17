@@ -58,7 +58,9 @@ function MapContainer({
   // }
 
   // TODO: decuple from callback / move it to API (add cache)
-  async function fetchAreas(bbox) {
+  const fetchAreas = useCallback(
+    (bbox) => {
+  async function doFetch(bbox) {
     const zoom = Math.ceil(map.current.getZoom())
     const zoomlevel = ZOOM_LEVELS.filter(
       (l) => zoom < l.zoom[0] && zoom >= l.zoom[1]
@@ -87,6 +89,8 @@ function MapContainer({
       console.error(`Could not get areas: ${error}`)
     }
   }
+  doFetch(bbox)
+},[setCurrentAreas])
 
   const updateArea = useCallback(
     (e) => {
@@ -197,6 +201,14 @@ function MapContainer({
 
   useEffect(() => {
     if (!map.current) return // wait for map to initialize
+    map.current.on('draw.create', updateArea)
+    map.current.on('draw.delete', updateArea)
+    map.current.on('draw.update', updateArea)
+  }, [updateArea])
+
+
+  useEffect(() => {
+    if (!map.current) return // wait for map to initialize
     map.current.on('move', () => {
       setLng(map.current.getCenter().lng.toFixed(4))
       setLat(map.current.getCenter().lat.toFixed(4))
@@ -213,10 +225,7 @@ function MapContainer({
         }
       }
     })
-    map.current.on('draw.create', updateArea)
-    map.current.on('draw.delete', updateArea)
-    map.current.on('draw.update', updateArea)
-  }, [currentBoundary, updateArea])
+  }, [currentBoundary,fetchAreas])
 
   return (
     <div>
