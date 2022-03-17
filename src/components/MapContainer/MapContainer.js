@@ -19,6 +19,7 @@ import {
 } from '../../geom'
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOXGL_TOKEN
+const baseUrl = process.env.REACT_APP_MAPSERVER_BASEURL
 //TODO: add loading from previous project
 function MapContainer({
   currentBoundary,
@@ -56,6 +57,37 @@ function MapContainer({
   //   }
   // }
 
+  // TODO: decuple from callback / move it to API (add cache)
+  async function fetchAreas(bbox) {
+    const zoom = Math.ceil(map.current.getZoom())
+    const zoomlevel = ZOOM_LEVELS.filter(
+      (l) => zoom < l.zoom[0] && zoom >= l.zoom[1]
+    )[0]
+    try {
+      const queryParams = Object.assign({}, ESRI_QUERY_DEFAULTS, {
+        geometry: bbox.toString(),
+        outFields: zoomlevel.fields.toString(),
+      })
+      const url = `${baseUrl}/${zoomlevel.path}/MapServer/${
+        zoomlevel.layer
+      }/query?${new URLSearchParams(queryParams).toString()}`
+      const response = await fetch(url)
+      if (!response.ok) {
+        // TODO: add to overall error handling
+        throw new Error(`HTTP error: ${response.status}`)
+      }
+      let json = await response.json()
+      if (ESRI_QUERY_DEFAULTS.f === 'pjson') json = arcgisToGeoJSON(json)
+      const areas = json.features.map((fe) => fe.properties[zoomlevel.field])
+      setCurrentAreas(areas)
+      // add/replace areas on map
+      map.current.getSource('area').setData(json)
+    } catch (error) {
+      //TODO: add to overall error handling
+      console.error(`Could not get areas: ${error}`)
+    }
+  }
+
   const updateArea = useCallback(
     (e) => {
       const data = draw.current.getAll()
@@ -71,40 +103,6 @@ function MapContainer({
         })
         draw.current.delete(pids)
         const area = Area(data)
-        //TODO: decuple from callback / move it to API (add cache)
-        async function fetchAreas(bbox) {
-          const zoom = Math.ceil(map.current.getZoom())
-          console.log(zoom)
-          const zoomlevel = ZOOM_LEVELS.filter(
-            (l) => zoom < l.zoom[0] && zoom >= l.zoom[1]
-          )[0]
-          console.log(zoomlevel.name)
-          try {
-            const queryParams = Object.assign({}, ESRI_QUERY_DEFAULTS, {
-              geometry: bbox.toString(),
-              outFields: zoomlevel.fields.toString(),
-            })
-            const url = `https://ons-inspire.esriuk.com/arcgis/rest/services/${
-              zoomlevel.url
-            }/MapServer/${zoomlevel.layer}/query?${new URLSearchParams(
-              queryParams
-            ).toString()}`
-            const response = await fetch(url)
-            if (!response.ok) {
-              throw new Error(`HTTP error: ${response.status}`)
-            }
-            let json = await response.json()
-            if (ESRI_QUERY_DEFAULTS.f === 'pjson') json = arcgisToGeoJSON(json)
-            const areas = json.features.map(
-              (fe) => fe.properties[zoomlevel.field]
-            )
-            setCurrentAreas(areas)
-            // add/replace areas on map
-            map.current.getSource('area').setData(json)
-          } catch (error) {
-            console.error(`Could not get products: ${error}`)
-          }
-        }
         fetchAreas(BBox(data))
         setCurrentBoundary(data)
         // Restrict the area to 2 decimal points.
@@ -115,7 +113,7 @@ function MapContainer({
         if (e.type !== 'draw.delete') alert('Click the map to draw a polygon.')
       }
     },
-    [setCurrentBoundary, setCurrentAreas]
+    [setCurrentBoundary, fetchAreas]
   )
 
   useEffect(() => {
@@ -211,8 +209,7 @@ function MapContainer({
             !(map.current.getZoom() > MAP_RESTRICTIONS.MAX_ZOOM_LEVEL) &&
             !(map.current.getZoom() < MAP_RESTRICTIONS.MIN_ZOOM_LEVEL)
           )
-            //TODO: fetch new areas
-            console.log('FETCH')
+            fetchAreas(BBox(currentBoundary))
         }
       }
     })
@@ -231,7 +228,7 @@ function MapContainer({
       <div className="calculation-box">
         <p>Click the map to draw a polygon.</p>
         <div id="calculated-area"></div>
-        <div id="areas">{currentAreas.toString()}</div>
+        <div id="areas">{currentAreas}</div>
       </div>
     </div>
   )

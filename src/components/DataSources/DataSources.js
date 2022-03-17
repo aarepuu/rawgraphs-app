@@ -8,7 +8,11 @@ function getSources() {
   return fetch('./dataSources.json').then((data) => data.json())
 }
 
-export default function DataSources({ onSampleReady, setLoadingError }) {
+export default function DataSources({
+  onSampleReady,
+  setLoadingError,
+  selectedAreas,
+}) {
   const [sourcesList, setDataSources] = useState([])
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export default function DataSources({ onSampleReady, setLoadingError }) {
     const { delimiter, url } = sample
     let response
     try {
-      response = await fetch(url)
+      response = await fetch(`${url}${selectedAreas.toString()}`)
     } catch (e) {
       setLoadingError('Loading error. ' + e.message)
       return

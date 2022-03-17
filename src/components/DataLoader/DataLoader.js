@@ -60,6 +60,7 @@ function DataLoader({
   commitDataReplace,
   replaceRequiresConfirmation,
   hydrateFromProject,
+  currentAreas,
 }) {
   const [loadingError, setLoadingError] = useState()
   const [initialOptionState, setInitialOptionState] = useState(null)
@@ -73,6 +74,7 @@ function DataLoader({
         <DataSources
           onSampleReady={loadSample}
           setLoadingError={setLoadingError}
+          selectedAreas={currentAreas}
         />
       ),
       icon: BsGift,

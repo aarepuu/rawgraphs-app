@@ -103,8 +103,7 @@ function App() {
   }, [])
 
   const handleAreasChange = useCallback((areas) => {
-    setCurrentAreas(areas)
-    console.log(areas)
+    setCurrentAreas([...areas])
   }, [])
 
   const exportProject = useCallback(() => {
@@ -186,11 +185,15 @@ function App() {
             setCurrentAreas={handleAreasChange}
           />
         </Section>
-        {
+        {currentAreas.length > 0 && (
           <Section title={`2. Load your data`} loading={loading}>
-            <DataLoader {...dataLoader} hydrateFromProject={importProject} />
+            <DataLoader
+              {...dataLoader}
+              hydrateFromProject={importProject}
+              currentAreas={currentAreas}
+            />
           </Section>
-        }
+        )}
         {data && (
           <Section title="3. Choose a chart">
             <ChartSelector
